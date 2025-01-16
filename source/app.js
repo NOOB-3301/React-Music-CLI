@@ -37,7 +37,14 @@ const App = () => {
   const [currTime, setcurrTime] = useState(0)
 
   setInterval(() => {
-    setcurrTime(player?.currentTime)
+    if (player) {
+      splayer?.destroy()
+      setcurrTime(player?.currentTime)
+    }
+    if (splayer) {
+      player?.destroy()
+      setcurrTime(splayer?.currentTime)
+    }
   }, 1000);
   
 
@@ -79,6 +86,11 @@ const App = () => {
     if (player && isPlaying) {
       const newTime = Math.max(0, player.currentTime + seconds);
       player.currentTime = newTime;
+    }
+
+    if (splayer && isPlaying) {
+      const newTime = Math.max(0, splayer.currentTime + seconds);
+      splayer.currentTime = newTime;
     }
     
   };
@@ -125,8 +137,8 @@ const App = () => {
   
   // let suffeledPlaylist = [];
   useEffect(() => {
-    console.log('useffecthit ')
-    console.log(shuffeledplaylist)
+    // console.log('useffecthit ')
+    // console.log(shuffeledplaylist)
     if (shuffeledplaylist.length > 0) {
       if (player?.playing) {
         player.destroy()
@@ -148,10 +160,15 @@ const App = () => {
         splayer.addEventListener('ended', () => {
           setIndex(prev => prev+1)
           // console.log("index updated")
+          if (index == shuffeledplaylist.length-1) {
+            console.log(index)
+            setshuffeledplaylist([])
+            splayer.destroy()
+          }
         });
       }
       shhuffledplayer()
-      setshuffeledplaylist([])
+      // setshuffeledplaylist([])
     }
   }, [playlistchanged,index])
   
@@ -162,6 +179,8 @@ const App = () => {
     if (key.rightArrow) setSelectedPage((prev) => Math.min(prev + 1, pageMap.length - 1));
 
     if (key.return) {
+      splayer?.destroy()
+      player?.destroy()
       const selectedFile = pageMap[selectedPage]?.[selectedIndex];
       if (selectedFile) playAudio(selectedFile);
     }
@@ -195,7 +214,7 @@ const App = () => {
         }
       } while (count !== totalCount);
     
-      console.log("Shuffled Playlist:", localPLaylist);
+      // console.log("Shuffled Playlist:", localPLaylist);
       setshuffeledplaylist([...shuffeledplaylist,...localPLaylist])
       setPlaylistchanged(prev => !prev)
       
@@ -204,12 +223,18 @@ const App = () => {
   });
 
   return (
-    <Box flexDirection="row" height="10%" justifyContent="space-between">
+    <Box flexDirection="row" height="100%" gap={20} justifyContent="space-between">
       {/* Left Panel */}
-      <Box borderStyle="round" flexDirection="column" padding={1}   width="100%">
-        <Gradient name="atlas">
-          <BigText text="MUSIC CLI"  />
-        </Gradient>
+      <Box borderStyle="classic" marginRight={10} flexDirection="column" padding={1}   width="75%">
+        <Box >
+          <Gradient name="atlas">
+            <BigText text="MUSIC CLI"  />
+          </Gradient>
+{/* borderStyle="round" borderColor="green" padding="100" name='vice' */}
+        </Box>
+        <Box  justifyContent='center' alignItems='center'>
+          <Gradient borderStyle="round" name='vice'  >Play Your Favourite Music via CLI.</Gradient>
+        </Box>
 
         <Box marginTop={1} flexDirection="column">
           <Text color="yellow">Your Music List:</Text>
@@ -232,13 +257,14 @@ const App = () => {
         )}
         <Box>
           <Text color="yellow">Time Remaining:</Text>
-          <Text>{` ${currTime ? currTime : " _" }seconds : ${player?.duration ? player?.duration : "_"}seconds`} </Text>
+          {/* splayer?.duration ? splayer?.duration : "_" */}
+          <Text>{` ${currTime ? currTime : " _" }seconds : ${splayer ? splayer?.duration ? splayer?.duration : "_" : player?.duration ? player?.duration : "_"}seconds`} </Text>
         </Box>
       </Box>
 
       {/* Right Panel */}
-      <Box borderStyle="round" padding={1} width={40} flexDirection="column">
-        <Text color="cyan">Audio Metadata:</Text>
+      <Box borderStyle="classic" marginRight="10%" padding={1} width="50%" flexDirection="column">
+        <Text color="cyan">Song Details:</Text>
         {audioMetadata ? (
           <>
             <Text>Title: <Text color="green">{audioMetadata?.tags?.title || 'N/A'}</Text></Text>
@@ -248,7 +274,7 @@ const App = () => {
             <Text>Bit Rate: <Text color="green">{audioMetadata?.bit_rate} kbps</Text></Text>
           </>
         ) : (
-          <Text color="red">No metadata available</Text>
+          <Text color="red">No Song is playing now...</Text>
         )}
       </Box>
     </Box>
