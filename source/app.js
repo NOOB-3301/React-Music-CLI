@@ -7,6 +7,7 @@ import os from 'os';
 import path from 'path';
 import Audic from 'audic';
 import Ffmpeg from 'fluent-ffmpeg';
+import nodeNotifier from 'node-notifier';
 
 const getAudioMetadata = (filePath) => {
   return new Promise((resolve, reject) => {
@@ -24,6 +25,9 @@ let player = null;
 let splayer = null
 
 const App = () => {
+
+  // nodeNotifier.notify("message")
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedPage, setSelectedPage] = useState(0);
   const [pageMap, setPageMap] = useState([]);
@@ -65,19 +69,19 @@ const App = () => {
   };
 
   const pauseAudio = () => {
-    if (player.playing) {
+    if (player?.playing) {
       player.pause();
       setIsPlaying(false);
     } else {
-      player.play();
+      player?.play();
       setIsPlaying(true);
     }
 
     if (splayer?.playing) {
-      splayer.pause()
+      splayer?.pause()
       setIsPlaying(false)
     }else{
-      splayer.paly()
+      splayer?.play()
       setIsPlaying(true)
     }
   };
@@ -113,6 +117,7 @@ const App = () => {
       await player.play();
       setIsPlaying(true);
       setCurrentlyPlaying(audio);
+      nodeNotifier.notify(`Started Playing ${audio}`)
     } catch (error) {
       console.error("Error playing audio or fetching metadata:", error);
     }
@@ -157,6 +162,7 @@ const App = () => {
         setAudioMetadata(metadata)
         setIsPlaying(true);
         setCurrentlyPlaying(shuffeledplaylist[index]);
+        nodeNotifier.notify(`Now playing from shuffled playlist: ${shuffeledplaylist[index]}`)
         splayer.addEventListener('ended', () => {
           setIndex(prev => prev+1)
           // console.log("index updated")
@@ -217,8 +223,9 @@ const App = () => {
       // console.log("Shuffled Playlist:", localPLaylist);
       setshuffeledplaylist([...shuffeledplaylist,...localPLaylist])
       setPlaylistchanged(prev => !prev)
-      
-
+    }
+    if (input === 'n') {
+      setIndex(prev => prev+1)
     }
   });
 
@@ -278,6 +285,7 @@ const App = () => {
         )}
       </Box>
     </Box>
+      
   );
 };
 
