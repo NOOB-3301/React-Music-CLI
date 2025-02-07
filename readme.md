@@ -27,10 +27,20 @@ Music CLI is a terminal-based music player built with React, Ink, and Node.js. I
    cd <repository-folder>
    ```
 2. Install the pacakges using `npm i`
-3. link your cli tool using `npm link` or `sudo npm link`
-4. For changes :
-	```
-   - npm run build
-   - chmod +x dist/*
-   - musicCLI
-	```
+
+## Usage
+Run the application with:
+
+```sh
+npm run build
+chmod +X dist/*
+npm link
+``` 
+(OR)
+``` sh
+npm run build
+chmod +X dist/*
+sudo npm link
+```
+
+
