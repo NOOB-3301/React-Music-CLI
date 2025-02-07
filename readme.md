@@ -2,6 +2,8 @@
 
 Music CLI is a terminal-based music player built with React, Ink, and Node.js. It allows you to browse and play audio files directly from the command line. Additional features include metadata display, playback controls, and playlist shuffling.
 
+![Music CLI](./assets/MuiscCLI.png)
+
 ## Features
 
 - **Browse Local Music**: Lists audio files from the user's `Music` directory.
