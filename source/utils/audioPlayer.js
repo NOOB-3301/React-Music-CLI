@@ -1,44 +1,49 @@
-import Audic from 'audic';
-import Ffmpeg from 'fluent-ffmpeg';
-import nodeNotifier from 'node-notifier';
+import { useEffect, useRef } from "react";
 
-const getAudioMetadata = (filePath) => {
-  return new Promise((resolve, reject) => {
-    Ffmpeg.ffprobe(filePath, (err, metadata) => {
-      if (err) {
-        return reject(`Error getting metadata: ${err}`);
+const AudioPlayer = ({ songs, currentSongIndex, setCurrentSongIndex }) => {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  
+  const playSong = (songUrl) => {
+    if (audioRef.current) {
+      audioRef.current.src = songUrl;
+      audioRef.current.load(); 
+      audioRef.current.play().catch(err => console.error("Auto-play blocked", err));
+    }
+  };
+
+ 
+  const playNextSong = () => {
+    const nextIndex = (currentSongIndex + 1) % songs.length;
+    setCurrentSongIndex(nextIndex);
+    playSong(songs[nextIndex].url);
+  };
+
+  useEffect(() => {
+    if (songs[currentSongIndex]) {
+      playSong(songs[currentSongIndex].url);
+    }
+  }, [currentSongIndex]);
+
+  
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.addEventListener("ended", playNextSong);
+    }
+    return () => {
+      if (audio) {
+        audio.removeEventListener("ended", playNextSong);
       }
-      resolve(metadata.format);
-    });
-  });
+    };
+  }, [currentSongIndex]);
+
+  return (
+    <audio ref={audioRef} controls>
+      <source src={songs[currentSongIndex]?.url} type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+  );
 };
 
-let player = null;
-let splayer = null;
-
-const stopAudio = () => {
-  if (player) {
-    player.destroy();
-  }
-  if (splayer) {
-    splayer.destroy();
-  }
-};
-
-const playAudio = async (filePath, setMetadata, setPlaying, setCurrentlyPlaying) => {
-  try {
-    stopAudio();
-    const metadata = await getAudioMetadata(filePath);
-    setMetadata(metadata);
-
-    player = new Audic(filePath);
-    await player.play();
-    setPlaying(true);
-    setCurrentlyPlaying(filePath);
-    nodeNotifier.notify(`Started Playing ${filePath}`);
-  } catch (error) {
-    console.error("Error playing audio or fetching metadata:", error);
-  }
-};
-
-export { playAudio, stopAudio, getAudioMetadata };
+export default AudioPlayer;
