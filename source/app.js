@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Box, useInput } from 'ink';
 import path from 'path';
-import { getMusicFiles } from './utils/fileHelper';
-import { playAudio, stopAudio } from './utils/audioPlayer';
-import Header from './components/Header';
-import SongList from './components/SongList';
-import NowPlaying from './components/NowPlaying';
+import { getMusicFiles } from './utils/fileHelper.js';
+import { playAudio, stopAudio } from './utils/audioPlayer.js';
+import Header from './components/Header.js';
+import SongList from './components/SongList.js';
+import NowPlaying from './components/NowPlaying.js';
 
 const App = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);

@@ -1,10 +1,11 @@
-const fetch = require('node-fetch');
+import axios from 'axios';
 
 // 🔎 Function to search for songs
 async function searchSongs(query) {
     try {
         const url = `https://saavn.dev/api/search/songs?query=${encodeURIComponent(query)}`;
-        const response = await fetch(url);
+        const response = await axios.get(url);
+
         if (response.data && response.data.data) {
             return response.data.data.results.map(song => ({
                 id: song.id,
@@ -15,7 +16,7 @@ async function searchSongs(query) {
         }
         return [];
     } catch (error) {
-        console.error("❌ Error fetching search results:", error);
+        console.error("❌ Error fetching search results:", error.message);
         return [];
     }
 }
@@ -24,7 +25,8 @@ async function searchSongs(query) {
 async function getSongDetails(songId) {
     try {
         const url = `https://saavn.dev/api/songs?id=${songId}`;
-        const response = await fetch(url);
+        const response = await axios.get(url);
+
         if (response.data && response.data.data.length > 0) {
             const song = response.data.data[0];
             return {
@@ -36,9 +38,9 @@ async function getSongDetails(songId) {
         }
         return null;
     } catch (error) {
-        console.error("❌ Error fetching song details:", error);
+        console.error("❌ Error fetching song details:", error.message);
         return null;
     }
 }
 
-module.exports = { searchSongs, getSongDetails };
+export { searchSongs, getSongDetails };

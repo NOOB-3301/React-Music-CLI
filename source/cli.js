@@ -3,7 +3,9 @@ import React from 'react';
 import {render} from 'ink';
 import meow from 'meow';
 import App from './app.js';
-import { searchSongs, getSongDetails } from './utils/api.js';
+// import { searchSongs, getSongDetails } from './utils/api.js';
+import { searchSongs } from './utils/api.js';
+import readline from 'readline';
 
 const cli = meow(
 	`
